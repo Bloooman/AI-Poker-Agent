@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mypackage"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = ["pypokerengine"]
+
+[tool.setuptools.packages.find]
+where = ["."]    # flat layout — searches root, not src/
+exclude = ["tests*", "benchmarks*", "docs*"]
