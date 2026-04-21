@@ -1,0 +1,47 @@
+# --- Dev & scratch ---
+dev.py
+
+# --- PDFs (agent resources) ---
+**/*.pdf
+
+# --- Python build artifacts ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# --- Editable install ---
+*.egg-link
+pip-wheel-metadata/
+
+# --- Environment ---
+.conda/
+.env
+.venv/
+env/
+
+# --- pytest / coverage ---
+.pytest_cache/
+.coverage
+htmlcov/
+.benchmarks/
+
+# --- Type checker ---
+.pyright/
+.mypy_cache/
+
+# --- Pickled caches (per §7.3 pitfall) ---
+*.pkl
+*.pickle
+
+# --- Editor ---
+.vscode/settings.json
+.idea/
+
+# --- OS ---
+.DS_Store
+Thumbs.db
