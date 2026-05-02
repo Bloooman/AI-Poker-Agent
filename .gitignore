@@ -34,10 +34,6 @@ htmlcov/
 .pyright/
 .mypy_cache/
 
-# --- Pickled caches (per §7.3 pitfall) ---
-*.pkl
-*.pickle
-
 # --- Editor ---
 .vscode/settings.json
 .idea/

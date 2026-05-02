@@ -36,7 +36,7 @@ from abstraction import abstract
 STRATEGY_PATH = "strategy.pkl"
 N_ITERATIONS  = 100_000   # number of self-play games; increase for better convergence
 MAX_ROUND     = 20        # rounds per game (keep short to iterate fast)
-INITIAL_STACK = 10_000
+INITIAL_STACK = 1_000
 SMALL_BLIND   = 10
 ACTIONS       = ["fold", "call", "raise"]
 
@@ -55,7 +55,7 @@ class CFRPlayer(BasePokerPlayer):
     Attributes:
         regret_sum   : dict — cumulative positive regrets per info set and action
         strategy_sum : dict — cumulative strategy weights for average computation
-        trajectory   : list — (info_set_key, action_taken, valid_actions)
+        trajectory   : list — (info_set_key, action_taken, valid_actions, strategy)
                        recorded during a game for end-of-game regret update
     """
 
@@ -129,7 +129,7 @@ class CFRPlayer(BasePokerPlayer):
         action = random.choices(list(strategy.keys()),
                                 weights=list(strategy.values()))[0]
 
-        self.trajectory.append((info_set, action, valid_names))
+        self.trajectory.append((info_set, action, valid_names, dict(strategy)))
         return action
 
     def receive_game_start_message(self, game_info):
@@ -155,28 +155,38 @@ class CFRPlayer(BasePokerPlayer):
 def update_regrets(player, game_result, player_index):
     """Apply CFR+ regret updates for all decisions made during a game.
 
-    For each visited info set, computes the counterfactual regret of
-    actions not taken and updates regret_sum with the CFR+ clamp (≥ 0).
+    For each visited info set I with sampled action a_t, strategy σ, and
+    terminal utility u, the counterfactual value of each action is:
 
-    Uses terminal game reward (chip delta) as a proxy for state value.
-    This is outcome-sampling MCCFR: each game provides one sample of
-    the terminal utility.
+        v(a_t) = u          — observed directly from the sampled game
+        v(a)   = 0          — unobserved; set to neutral baseline
+
+    The mixed-strategy value is therefore v(σ) = σ(a_t) * u.
+    Per-action counterfactual regret:
+
+        r(I, a_t) = v(a_t) − v(σ) =  u * (1 − σ(a_t))
+        r(I, a)   = v(a)   − v(σ) = −u *  σ(a_t)        for a ≠ a_t
+
+    CFR+ then clamps the running regret sum to ≥ 0.
 
     Args:
         player       : CFRPlayer instance
         game_result  : dict returned by start_poker
         player_index : int — 0 or 1, identifies which seat is ours
     """
-    # TODO: compute actual counterfactual regrets per info set.
-    # For now, use the simple chip delta as terminal utility signal.
-    final_stack  = game_result["players"][player_index]["stack"]
-    utility      = final_stack - INITIAL_STACK  # positive = won chips
+    final_stack = game_result["players"][player_index]["stack"]
+    utility     = final_stack - INITIAL_STACK  # positive = won chips
 
-    for info_set, action_taken, valid_names in player.trajectory:
+    for info_set, action_taken, valid_names, strategy in player.trajectory:
+        p_taken = strategy[action_taken]
+
         for a in valid_names:
-            # Regret of not taking action a: approximate as ±utility.
-            regret = utility if a == action_taken else -utility / len(valid_names)
-            # CFR+ clamp: regrets never go below zero.
+            if a == action_taken:
+                regret = utility * (1.0 - p_taken)
+            else:
+                regret = -utility * p_taken
+
+            # CFR+ clamp: cumulative regret never goes below zero.
             player.regret_sum[info_set][a] = max(
                 0, player.regret_sum[info_set][a] + regret
             )
@@ -214,8 +224,9 @@ def train():
         update_regrets(p1, result, player_index=0)
         update_regrets(p2, result, player_index=1)
 
-        if (iteration + 1) % 10_000 == 0:
-            print(f"Iteration {iteration + 1}/{N_ITERATIONS} complete.")
+        if (iteration + 1) % 1_000 == 0:
+            pct = (iteration + 1) / N_ITERATIONS * 100
+            print(f"Iteration {iteration + 1}/{N_ITERATIONS} ({pct:.1f}%) complete.")
 
     _save_strategy(strategy_sum)
     print(f"Strategy saved to {STRATEGY_PATH}.")
