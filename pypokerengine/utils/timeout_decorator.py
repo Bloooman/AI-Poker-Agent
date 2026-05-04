@@ -100,7 +100,7 @@ def timeout2(seconds=None, defaultretval="Blah",exception_message="[EXP]: Action
     """
     def decorate(function):
 
-        if not seconds:
+        if not seconds or not hasattr(signal, "SIGALRM"):
             return function
 
         
