@@ -34,9 +34,9 @@ from abstraction import abstract
 # ---------------------------------------------------------------------------
 
 STRATEGY_PATH = "strategy.pkl"
-N_ITERATIONS  = 100_000   # number of self-play games; increase for better convergence
-MAX_ROUND     = 20        # rounds per game (keep short to iterate fast)
-INITIAL_STACK = 1_000
+N_ITERATIONS  = 500_000   # number of self-play games (one hand each)
+MAX_ROUND     = 1         # one hand per game → utility = result of that hand
+INITIAL_STACK = 10_000    # match play configuration (example.py)
 SMALL_BLIND   = 10
 ACTIONS       = ["fold", "call", "raise"]
 
