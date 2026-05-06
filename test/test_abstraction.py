@@ -130,25 +130,29 @@ def test_hand_bucket_postflop():
     check("Straight flush → bucket 7",
           _hand_bucket(["CA", "CK"], ["CQ", "CJ", "CT"]) == 7)
 
-    # Four of a kind: bucket 6
-    check("Four of a kind → bucket 6",
-          _hand_bucket(["CA", "DA"], ["HA", "SA", "C2"]) == 6)
+    # Four of a kind: bucket 7
+    check("Four of a kind → bucket 7",
+          _hand_bucket(["CA", "DA"], ["HA", "SA", "C2"]) == 7)
 
-    # Full house: bucket 5
-    check("Full house → bucket 5",
-          _hand_bucket(["CK", "DK"], ["HK", "CA", "DA"]) == 5)
+    # Full house: bucket 6
+    check("Full house → bucket 6",
+          _hand_bucket(["CK", "DK"], ["HK", "CA", "DA"]) == 6)
 
-    # Flush: bucket 4
-    check("Flush → bucket 4",
-          _hand_bucket(["CA", "CK"], ["CQ", "CJ", "C2"]) == 4)
+    # Flush: bucket 5
+    check("Flush → bucket 5",
+          _hand_bucket(["CA", "CK"], ["CQ", "CJ", "C2"]) == 5)
 
-    # Straight: bucket 3
-    check("Straight → bucket 3",
-          _hand_bucket(["CA", "DK"], ["HQ", "SJ", "CT"]) == 3)
+    # Straight: bucket 4
+    check("Straight → bucket 4",
+          _hand_bucket(["CA", "DK"], ["HQ", "SJ", "CT"]) == 4)
 
-    # High card / one pair: bucket 0
-    check("High card / one pair → bucket 0",
+    # High card: bucket 0
+    check("High card → bucket 0",
           _hand_bucket(["C2", "D7"], ["HQ", "SJ", "CA"]) == 0)
+
+    # One pair: bucket 1
+    check("One pair → bucket 1",
+          _hand_bucket(["CA", "D2"], ["HA", "S7", "C3"]) == 1)
 
 
 # ---------------------------------------------------------------------------

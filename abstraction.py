@@ -79,13 +79,13 @@ def _street_to_int(street_str):
 # Highcard and one pair share bucket 0 (weakest grouping).
 _STRENGTH_STR_TO_BUCKET = {
     "HIGHCARD":      0,
-    "ONEPAIR":       0,
-    "TWOPAIR":       1,
-    "THREECARD":     2,
-    "STRAIGHT":      3,
-    "FLASH":         4,
-    "FULLHOUSE":     5,
-    "FOURCARD":      6,
+    "ONEPAIR":       1,
+    "TWOPAIR":       2,
+    "THREECARD":     3,
+    "STRAIGHT":      4,
+    "FLASH":         5,
+    "FULLHOUSE":     6,
+    "FOURCARD":      7,
     "STRAIGHTFLASH": 7,
 }
 
